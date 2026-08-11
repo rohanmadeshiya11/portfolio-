@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rohan Matheshiya | Premium Visual Designer & Video Editor</title>
+    
+    <!-- Premium Fonts: Outfit for Display, Inter for Body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            400: '#ff7a33',
+                            500: '#FF5722', // Deep, premium vibrant orange
+                            600: '#e64a19',
+                        },
+                        surface: {
+                            900: '#050505', // Ultra deep black
+                            800: '#0c0c0c',
+                            700: '#141414',
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base Dark Theme & Typography */
+        body {
+            background-color: #050505;
+            color: #888;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Subtle Noise Overlay for texture (Removes the flat AI look) */
+        .noise-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Minimal Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF5722; }
+
+        /* Custom Selection */
+        ::selection { background: #FF5722; color: #fff; }
+
+        /* Reveal Animations (Triggered via JS Observer) */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-up.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glassmorphism utilities */
+        .glass {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Image hover FX */
+        .img-reveal {
+            filter: grayscale(100%) contrast(1.1) brightness(0.7);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .group:hover .img-reveal {
+            filter: grayscale(0%) contrast(1) brightness(1);
+            transform: scale(1.05);
+        }
+
+        /* Text gradient */
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #a3a3a3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-brand {
+            background: linear-gradient(135deg, #FF5722 0%, #ff9d70 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div class="noise-bg"></div>
+
+    <!-- Floating Pill Navbar -->
+    <nav class="fixed w-full top-6 z-50 px-4 pointer-events-none flex justify-center transition-all duration-500" id="navbar">
+        <div class="pointer-events-auto glass rounded-full px-6 py-3 flex items-center justify-between w-full max-w-4xl shadow-2xl">
+            <a href="#" onclick="navigateTo('home'); return false;" class="font-display text-xl font-bold text-white tracking-wide">
+                Rohan<span class="text-brand-500">.</span>
+            </a>
+            
+            <!-- Desktop Links -->
+            <div class="hidden md:flex items-center gap-8 px-8">
+                <a href="#" data-page="portfolio" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors">Work</a>
+                <a href="#" data-section="skills" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors">Expertise</a>
+                <a href="#" data-page="about" class="nav-link text-sm font-medium text-gray-400 hover:text-white transition-colors">About</a>
+            </div>
+
+            <!-- CTA -->
+            <div class="hidden md:block">
+                <a href="mailto:smadeshiya42@gmail.com" class="px-5 py-2 rounded-full bg-brand-500 text-white text-sm font-semibold hover:bg-white hover:text-black transition-colors duration-300">
+                    Let's Talk
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none ml-4">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Dropdown -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-surface-900/95 backdrop-blur-xl flex-col items-center justify-center gap-8 hidden">
+        <a href="#" data-page="home" class="nav-link text-3xl font-display font-bold text-white hover:text-brand-500">Home</a>
+        <a href="#" data-page="portfolio" class="nav-link text-3xl font-display font-bold text-white hover:text-brand-500">Work</a>
+        <a href="#" data-page="about" class="nav-link text-3xl font-display font-bold text-white hover:text-brand-500">About & Experience</a>
+        <a href="mailto:smadeshiya42@gmail.com" class="mt-8 px-8 py-3 rounded-full bg-brand-500 text-white font-semibold">Contact</a>
+    </div>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div id="main-content" class="relative">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="relative min-h-[90vh] flex flex-col justify-center items-center pt-32 pb-20 px-4 overflow-hidden">
+            <!-- Subtle ambient glow -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-500/10 rounded-full blur-[150px] pointer-events-none"></div>
+            
+            <div class="max-w-5xl mx-auto w-full text-center relative z-10 flex flex-col items-center">
+                
+                <!-- Status Pill -->
+                <div class="reveal-up mb-10 inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    <span class="text-[11px] font-medium text-gray-300 uppercase tracking-widest">Visual Designer & Video Editor @ Traya</span>
+                </div>
+
+                <!-- Massive Headline -->
+                <h1 class="reveal-up font-display text-5xl md:text-7xl lg:text-[85px] font-bold text-white leading-[1.1] tracking-tight mb-8">
+                    Crafting <span class="italic font-light text-gray-400">visual stories</span><br />
+                    through <span class="text-gradient-brand">Design & Video.</span>
+                </h1>
+                
+                <p class="reveal-up text-lg md:text-xl text-gray-400 max-w-2xl mx-auto font-light leading-relaxed mb-12">
+                    I'm Rohan Matheshiya. I combine creative storytelling with modern AI-powered workflows to build highly engaging, performance-driven digital content.
+                </p>
+
+                <div class="reveal-up flex flex-col sm:flex-row gap-5">
+                    <button onclick="navigateTo('portfolio')" class="group px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-brand-500 hover:text-white transition-all duration-300 flex items-center justify-center gap-3">
+                        Explore Work <i class="fa-solid fa-arrow-down-long group-hover:translate-y-1 transition-transform"></i>
+                    </button>
+                    <a href="https://www.linkedin.com/in/rohanmatheshiya/" target="_blank" class="px-8 py-4 bg-transparent text-white border border-white/20 rounded-full font-medium hover:border-white/60 transition-colors flex items-center justify-center gap-3">
+                        <i class="fa-brands fa-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Projects Section -->
+        <section id="projects" class="py-24 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="reveal-up flex justify-between items-end mb-16 border-b border-white/10 pb-6">
+                    <div>
+                        <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-2" id="projects-title">Selected Works</h2>
+                        <p class="text-gray-400">Featured projects highlighting video production & AI content.</p>
+                    </div>
+                    <span class="hidden md:block font-display text-6xl font-bold text-white/5">01</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                    
+                    <!-- Traya Health -->
+                    <div onclick="showProject('traya')" class="reveal-up group relative rounded-3xl overflow-hidden bg-surface-800 border border-white/5 cursor-pointer">
+                        <div class="aspect-[4/3] overflow-hidden relative bg-[#f4f4f5]">
+                            <img src="image_4b331b.png" alt="Traya Health Logo" class="w-full h-full object-contain p-12 md:p-16 img-reveal">
+                            <div class="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/60 to-transparent"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 md:p-10 flex flex-col justify-end">
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">Video Editing</span>
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">YouTube Content</span>
+                            </div>
+                            <h3 class="font-display text-3xl font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">Traya Health</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-md line-clamp-3">As a Video Editor & YouTube Content Specialist, I produced engaging, educational, and performance-driven videos. Edited long-form videos, Shorts, podcast episodes, and doctor-led educational content to transform complex healthcare topics into clear visual stories.</p>
+                        </div>
+                    </div>
+
+                    <!-- Kibo Clinic -->
+                    <div onclick="showProject('kibo')" class="reveal-up group relative rounded-3xl overflow-hidden bg-surface-800 border border-white/5 cursor-pointer mt-0 md:mt-16">
+                        <div class="aspect-[4/3] overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1000" alt="Kibo Clinic" class="w-full h-full object-cover img-reveal">
+                            <div class="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/40 to-transparent"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 md:p-10 flex flex-col justify-end">
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">AI Video Gen</span>
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">Channel Mgt</span>
+                            </div>
+                            <h3 class="font-display text-3xl font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">Kibo Clinic AI</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-md line-clamp-3">Handled end-to-end content production, creating AI-powered videos using avatars, voice generation, and premium B-roll. Managed channel workflow, SEO optimization, and publishing to produce scalable healthcare content.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fan Page Initiative (Hidden on Home) -->
+                    <div onclick="showProject('fanpage')" class="reveal-up extra-project hidden group relative rounded-3xl overflow-hidden bg-surface-800 border border-white/5 cursor-pointer">
+                        <div class="aspect-[4/3] overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1000" alt="Fan Page" class="w-full h-full object-cover img-reveal">
+                            <div class="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/40 to-transparent"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 flex flex-col justify-end">
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">Viral Strategy</span>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">Fan Page Initiative</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed">Contributed to a new fan page initiative by developing content ideas and editing short-form videos. Helped the network achieve 100M+ cumulative views across all pages within six months through organic reach.</p>
+                        </div>
+                    </div>
+
+                    <!-- Thumbnails (Hidden on Home) -->
+                    <div onclick="showProject('thumbnails')" class="reveal-up extra-project hidden group relative rounded-3xl overflow-hidden bg-surface-800 border border-white/5 cursor-pointer mt-0 md:mt-16">
+                        <div class="aspect-[4/3] overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000" alt="Thumbnails" class="w-full h-full object-cover img-reveal">
+                            <div class="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/40 to-transparent"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 flex flex-col justify-end">
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">Graphic Design</span>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">Thumbnail Design</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed">Designed engaging, high-converting YouTube thumbnails for Traya Health and Kibo Clinic. Created visually compelling designs aligned with brand identity to maximize click-through rates.</p>
+                        </div>
+                    </div>
+
+                    <!-- Himeya (Hidden on Home) -->
+                    <div onclick="showProject('himeya')" class="reveal-up extra-project hidden md:col-span-2 group relative rounded-3xl overflow-hidden bg-surface-800 border border-white/5 cursor-pointer">
+                        <div class="aspect-[21/9] md:aspect-[3/1] overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=1000" alt="Himeya" class="w-full h-full object-cover img-reveal" style="object-position: center 30%;">
+                            <div class="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/60 to-transparent"></div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 md:p-12 flex flex-col justify-end">
+                            <div class="flex gap-2 mb-4">
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">Brand Identity</span>
+                                <span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">Retail Marketing</span>
+                            </div>
+                            <h3 class="font-display text-3xl font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">Himeya Home Furnishings</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-2xl">Worked on visual identity and digital marketing creatives. Designed social media posts, product-focused visuals, and in-store branding materials (standees, posters). Maintained consistent brand identity across digital and offline touchpoints.</p>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div id="view-all-container" class="reveal-up mt-20 flex justify-center">
+                    <button onclick="navigateTo('portfolio')" class="group relative px-8 py-4 bg-transparent border border-white/20 text-white rounded-full font-medium hover:border-brand-500 transition-colors overflow-hidden">
+                        <span class="relative z-10 flex items-center gap-3">View All Projects <i class="fa-solid fa-arrow-right-long group-hover:translate-x-1 transition-transform"></i></span>
+                        <div class="absolute inset-0 bg-brand-500 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-in-out -z-0"></div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-24 relative z-10 bg-surface-800/30 border-y border-white/5">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="reveal-up max-w-3xl mb-16">
+                    <h2 class="font-display text-4xl font-bold text-white mb-6">Expertise & Tools</h2>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        I specialize in creating engaging, high-quality digital content by combining creative storytelling with modern AI-powered workflows. From editing cinematic videos to managing YouTube ecosystems, I leverage industry-leading tools.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Column 1 -->
+                    <div class="reveal-up glass p-8 rounded-3xl">
+                        <div class="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500 mb-6 border border-brand-500/20">
+                            <i class="fa-solid fa-film"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-6">Video & Design</h3>
+                        <ul class="space-y-4 text-gray-400 text-sm">
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Adobe Premiere Pro</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Adobe After Effects</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Adobe Photoshop</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Adobe Illustrator</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Adobe Creative Suite</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Column 2 -->
+                    <div class="reveal-up glass p-8 rounded-3xl" style="transition-delay: 100ms;">
+                        <div class="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500 mb-6 border border-brand-500/20">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-6">AI Content Gen</h3>
+                        <ul class="space-y-4 text-gray-400 text-sm">
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> ChatGPT & Gemini</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Midjourney</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> HeyGen & Hailuo AI</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> ElevenLabs (Voice)</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Prompt Engineering</li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3 -->
+                    <div class="reveal-up glass p-8 rounded-3xl" style="transition-delay: 200ms;">
+                        <div class="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500 mb-6 border border-brand-500/20">
+                            <i class="fa-brands fa-youtube"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-6">Content & YouTube</h3>
+                        <ul class="space-y-4 text-gray-400 text-sm">
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Long/Short-form Editing</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> YouTube Channel Mgt.</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> YouTube SEO & Strategy</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Thumbnail Design</li>
+                            <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-500 text-[10px]"></i> Podcast Editing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- End Main Content -->
+
+    <!-- PROJECT DETAIL PAGE (SPA) -->
+    <section id="project-detail-page" class="hidden relative pt-32 pb-24 z-10 min-h-screen">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <button onclick="navigateTo('portfolio')" class="mb-12 group flex items-center gap-3 text-gray-400 hover:text-white transition-colors font-medium">
+                <i class="fa-solid fa-arrow-left-long group-hover:-translate-x-1 transition-transform"></i> Back to Works
+            </button>
+
+            <!-- Dynamic Content Container injected via JS -->
+            <div id="pd-content" class="reveal-up active">
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- DEDICATED ABOUT PAGE (SPA) -->
+    <section id="about-page" class="hidden relative pt-32 pb-24 z-10 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="reveal-up flex justify-between items-end mb-16 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-2">About & Profile</h2>
+                    <p class="text-gray-400">My journey, experience, and education.</p>
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="reveal-up grid grid-cols-1 lg:grid-cols-12 gap-12 mb-24">
+                <div class="lg:col-span-5 relative">
+                    <div class="aspect-[4/5] rounded-3xl overflow-hidden glass p-2">
+                        <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1000" alt="Studio" class="w-full h-full object-cover rounded-2xl filter grayscale contrast-125">
+                    </div>
+                </div>
+                <div class="lg:col-span-7 flex flex-col justify-center">
+                    <h3 class="font-display text-3xl md:text-4xl font-bold text-white mb-8 leading-tight">
+                        I think like you, but design for your audience.
+                    </h3>
+                    <div class="space-y-6 text-gray-400 text-lg leading-relaxed mb-10 font-light">
+                        <p>
+                            I specialize in creating engaging, high-quality digital content by combining creative storytelling with modern AI-powered workflows. From editing cinematic videos and podcasts to producing AI-generated content and managing YouTube channels.
+                        </p>
+                        <p>
+                            Beyond traditional graphic design, I handle end-to-end content production. Whether it's editing long-form YouTube videos for Traya Health, creating AI avatars for Kibo Clinic, or driving 100M+ views through strategic initiatives, I bring a comprehensive understanding of digital media to every project.
+                        </p>
+                    </div>
+                    
+                    <div class="flex gap-12 pt-8 border-t border-white/10">
+                        <div>
+                            <h4 class="font-display text-white text-5xl font-bold mb-2">4+</h4>
+                            <p class="text-brand-500 text-xs font-bold uppercase tracking-widest">Years Exp.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-white text-5xl font-bold mb-2">100M</h4>
+                            <p class="text-brand-500 text-xs font-bold uppercase tracking-widest">Views Gen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience (Landscape Cards) -->
+            <div class="reveal-up mb-24">
+                <h3 class="font-display text-2xl font-bold text-white mb-8 flex items-center gap-4">
+                    <i class="fa-solid fa-briefcase text-brand-500"></i> Work Experience
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Traya Current -->
+                    <div class="glass p-6 rounded-2xl flex flex-col justify-between hover:border-brand-500/50 transition-colors group relative overflow-hidden">
+                        <div class="absolute inset-x-0 top-0 h-[2px] bg-brand-500 shadow-[0_0_10px_#FF5722]"></div>
+                        <div>
+                            <span class="text-brand-400 text-[10px] font-bold uppercase tracking-wider mb-2 block">Jun 2025 - Present</span>
+                            <h4 class="text-white font-bold text-lg mb-1">Traya</h4>
+                            <h5 class="text-gray-400 text-sm mb-4">Youtube Editor & Designer</h5>
+                            <p class="text-gray-500 text-xs leading-relaxed">Creating engaging YouTube content that combines design and storytelling to enhance brand presence and connect with a wider digital audience.</p>
+                        </div>
+                    </div>
+
+                    <!-- mCaffeine -->
+                    <div class="glass p-6 rounded-2xl flex flex-col justify-between hover:border-white/20 transition-colors group">
+                        <div>
+                            <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-2 block">Jul 2024 - Feb 2025</span>
+                            <h4 class="text-white font-bold text-lg mb-1">mCaffeine</h4>
+                            <h5 class="text-gray-400 text-sm mb-4">Executive Graphic Designer</h5>
+                            <p class="text-gray-500 text-xs leading-relaxed">Worked on E-commerce Banners, Paid Media Creatives, and Paid Media Reel Edits to drive conversions and high-impact brand awareness.</p>
+                        </div>
+                    </div>
+
+                    <!-- Traya Past -->
+                    <div class="glass p-6 rounded-2xl flex flex-col justify-between hover:border-white/20 transition-colors group">
+                        <div>
+                            <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-2 block">Jun 2023 - Jun 2024</span>
+                            <h4 class="text-white font-bold text-lg mb-1">Traya</h4>
+                            <h5 class="text-gray-400 text-sm mb-4">Graphic Designer</h5>
+                            <p class="text-gray-500 text-xs leading-relaxed">Designed Social Media Posts for 2 specific Instagram pages and designed highly clickable YouTube Thumbnails.</p>
+                        </div>
+                    </div>
+
+                    <!-- Yoga Institute -->
+                    <div class="glass p-6 rounded-2xl flex flex-col justify-between hover:border-white/20 transition-colors group">
+                        <div>
+                            <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-2 block">May 2022 - Jun 2023</span>
+                            <h4 class="text-white font-bold text-lg mb-1">The Yoga Institute</h4>
+                            <h5 class="text-gray-400 text-sm mb-4">Graphic Designer</h5>
+                            <p class="text-gray-500 text-xs leading-relaxed">Official Graphic Designer responsible for creating digital assets and managing visual consistency across social media.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education & Certifications -->
+            <div class="reveal-up grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Edu -->
+                <div>
+                    <h3 class="font-display text-2xl font-bold text-white mb-8 flex items-center gap-4">
+                        <i class="fa-solid fa-graduation-cap text-brand-500"></i> Education
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="border-b border-white/5 pb-6">
+                            <h4 class="text-white font-bold text-lg">Thakur College of Science & Commerce</h4>
+                            <p class="text-gray-400 text-sm mt-1">Bachelor of Arts (BA), Cinematography & Film</p>
+                            <span class="text-brand-500 text-xs font-medium tracking-wide mt-2 block">2019 - 2022</span>
+                        </div>
+                        <div class="pt-2">
+                            <h4 class="text-white font-bold text-lg">Utkarsha Vidayalaya Jr College</h4>
+                            <p class="text-gray-400 text-sm mt-1">Maharashtra State Board, HSC</p>
+                            <span class="text-brand-500 text-xs font-medium tracking-wide mt-2 block">2017 - 2018</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certs -->
+                <div>
+                    <h3 class="font-display text-2xl font-bold text-white mb-8 flex items-center gap-4">
+                        <i class="fa-solid fa-certificate text-brand-500"></i> Certifications
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="glass p-6 rounded-2xl flex items-center gap-5">
+                            <div class="w-10 h-10 rounded-full bg-brand-500/20 flex items-center justify-center text-brand-500 shrink-0">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold">Video Editing Course Premiere Pro</h4>
+                                <p class="text-gray-400 text-xs mt-1">18 Projects In 1 Course</p>
+                            </div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl flex items-center gap-5">
+                            <div class="w-10 h-10 rounded-full bg-brand-500/20 flex items-center justify-center text-brand-500 shrink-0">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold">Adobe Premiere Pro CC 2021</h4>
+                                <p class="text-gray-400 text-xs mt-1">Video Editing for Beginners</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer / Contact CTA -->
+    <footer class="border-t border-white/5 bg-surface-900 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col md:flex-row justify-between items-center gap-8">
+            
+            <div class="text-center md:text-left">
+                <h2 class="font-display text-3xl font-bold text-white mb-2">Ready to create?</h2>
+                <p class="text-gray-500 text-sm">Let's build engaging digital content together.</p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="mailto:smadeshiya42@gmail.com" class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-brand-500 hover:text-white transition-colors text-sm">
+                    smadeshiya42@gmail.com
+                </a>
+                <a href="https://www.linkedin.com/in/rohanmatheshiya/" target="_blank" class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-brand-500 hover:border-brand-500 transition-colors">
+                    <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+            </div>
+
+        </div>
+        <div class="border-t border-white/5 py-6 text-center">
+            <p class="text-gray-600 text-xs font-medium uppercase tracking-widest">&copy; 2026 Rohan Matheshiya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const projectData = {
+            'traya': {
+                title: 'Traya Health',
+                tags: ['Video Editing', 'YouTube Content'],
+                image: 'image_4b331b.png',
+                imgStyle: 'bg-[#f4f4f5] object-contain p-12 md:p-24',
+                role: 'Video Editor & YouTube Content Specialist',
+                body: `
+                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-6 font-light">As a Video Editor & YouTube Content Specialist at Traya Health, I worked across multiple digital content initiatives, producing engaging, educational, and performance-driven videos for the brand's YouTube ecosystem.</p>
+                    <h4 class="text-white text-2xl font-display font-bold mb-4 mt-12">Traya Health YouTube Channel</h4>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6 font-light">I edited long-form YouTube videos, YouTube Shorts, Instagram Reels, podcast episodes, and doctor-led educational content. My work included health awareness campaigns, debunk videos, expert interviews, and success stories designed to educate and engage audiences.</p>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6 font-light">I collaborated closely with the marketing, content, and medical teams to transform complex healthcare topics into clear, compelling visual stories while ensuring consistent quality and brand identity.</p>
+                    
+                    <h4 class="text-white text-2xl font-display font-bold mb-6 mt-12">Short-Form Edited Content</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/o5W_ApwrNn8" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/W9QApKgVAgQ" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/mWSB33DG7iU" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/ukWsT7_ul7o" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/FCh8gPECt2M" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/puRYn4-UIoI" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/3UVronh5qx0" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/GEmz-_z9b9I" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/PlLWTSY8rZE" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/0TFKYnqDEzw" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div style="position: relative; padding-bottom: 177.78%; height: 0; overflow: hidden;" class="rounded-2xl border border-white/10 bg-surface-900 shadow-lg">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/zFPuazKpZqc" title="YouTube Short" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                    </div>
+                `
+            },
+            'kibo': {
+                title: 'Kibo Clinic AI',
+                tags: ['AI Video Gen', 'Channel Mgt'],
+                image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1000',
+                imgStyle: 'object-cover',
+                role: 'Channel Manager & Content Creator',
+                body: `
+                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-6 font-light">For Kibo Clinic, I handled end-to-end content production, creating AI-powered videos using AI tools, avatars, voice generation, and premium B-roll.</p>
+                    <h4 class="text-white text-2xl font-display font-bold mb-4 mt-12">Channel Operations & SEO</h4>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6 font-light">I edited long-form videos and Shorts while also managing the YouTube channel workflow, including publishing, SEO optimization, titles, descriptions, tags, and overall channel management.</p>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6 font-light">The focus was on producing scalable, informative healthcare content that maximized audience reach and engagement through the strategic use of modern AI workflows.</p>
+                `
+            },
+            'fanpage': {
+                title: 'Fan Page Initiative',
+                tags: ['Viral Strategy'],
+                image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1000',
+                imgStyle: 'object-cover',
+                role: 'Content Strategist & Editor',
+                body: `
+                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-6 font-light">Contributed to a new fan page initiative by developing content ideas, editing short-form videos, and ensuring consistent content delivery.</p>
+                    <h4 class="text-white text-2xl font-display font-bold mb-4 mt-12">Impact & Reach</h4>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6 font-light">Collaborated with the team to produce high-volume, trend-driven content that helped the network achieve <strong class="text-white">100M+ cumulative views across all pages within six months</strong> through organic reach and consistent execution.</p>
+                `
+            },
+            'thumbnails': {
+                title: 'Thumbnail Design',
+                tags: ['Graphic Design'],
+                image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000',
+                imgStyle: 'object-cover',
+                role: 'Visual Designer',
+                body: `
+                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-6 font-light">Designed engaging, high-converting YouTube thumbnails for the Traya Health and Kibo Clinic YouTube channels.</p>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-6 font-light">Focused on creating visually compelling designs that aligned with each brand's identity while maximizing click-through rates (CTR) and audience engagement. Applied A/B testing principles and color theory to ensure content stood out in crowded feeds.</p>
+                `
+            },
+            'himeya': {
+                title: 'Himeya Home Furnishings',
+                tags: ['Brand Identity', 'Retail Marketing'],
+                image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=1000',
+                imgStyle: 'object-cover',
+                role: 'Visual Designer',
+                body: `
+                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-6 font-light">Worked on the visual identity and digital marketing creatives for Himeya, a home furnishing brand specializing in premium bedsheets and home décor products.</p>
+                    <h4 class="text-white text-2xl font-display font-bold mb-4 mt-12">Key Contributions</h4>
+                    <ul class="list-disc list-inside text-gray-400 text-lg leading-relaxed mb-6 font-light space-y-4">
+                        <li>Designed engaging social media creatives for Instagram, Facebook, and promotional campaigns.</li>
+                        <li>Created product-focused visuals that highlighted the brand's premium quality and aesthetics.</li>
+                        <li>Developed in-store branding materials, including standees, posters, banners, shelf graphics, and other retail marketing assets.</li>
+                        <li>Designed promotional creatives for seasonal campaigns, product launches, and festive sales.</li>
+                        <li>Maintained a consistent brand identity across both digital and offline touchpoints.</li>
+                        <li>Collaborated with the marketing team to deliver high-quality creative assets within tight deadlines.</li>
+                    </ul>
+                `
+            }
+        };
+
+        window.showProject = function(id) {
+            const data = projectData[id];
+            if(!data) return;
+
+            // Generate Tags HTML
+            const tagsHtml = data.tags.map(tag => `<span class="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider rounded-full">${tag}</span>`).join('');
+
+            // Build HTML
+            const html = `
+                <div class="mb-10">
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        ${tagsHtml}
+                    </div>
+                    <h1 class="font-display text-4xl md:text-6xl font-bold text-white mb-4">${data.title}</h1>
+                    <p class="text-brand-500 font-medium tracking-wide uppercase text-sm">${data.role}</p>
+                </div>
+                
+                <div class="w-full aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden mb-16 border border-white/10 bg-surface-800">
+                    <img src="${data.image}" alt="${data.title}" class="w-full h-full ${data.imgStyle}">
+                </div>
+
+                <div class="max-w-3xl">
+                    ${data.body}
+                </div>
+            `;
+
+            // Inject and show
+            document.getElementById('pd-content').innerHTML = html;
+            
+            // Manage views
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('about-page').classList.add('hidden');
+            document.getElementById('project-detail-page').classList.remove('hidden');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Trigger animation
+            setTimeout(() => {
+                document.getElementById('pd-content').classList.remove('active');
+                setTimeout(() => document.getElementById('pd-content').classList.add('active'), 50);
+            }, 10);
+        };
+
+        // SPA Navigation Logic
+        window.navigateTo = function(page) {
+            const mainContent = document.getElementById('main-content');
+            const aboutPage = document.getElementById('about-page');
+            const detailPage = document.getElementById('project-detail-page');
+            const extraProjects = document.querySelectorAll('.extra-project');
+            const viewAllBtn = document.getElementById('view-all-container');
+            const projectsTitle = document.getElementById('projects-title');
+
+            if (page === 'home') {
+                mainContent.classList.remove('hidden');
+                aboutPage.classList.add('hidden');
+                detailPage.classList.add('hidden');
+                
+                // Hide extra projects, reset title
+                extraProjects.forEach(el => el.classList.add('hidden'));
+                if(viewAllBtn) viewAllBtn.classList.remove('hidden');
+                if(projectsTitle) projectsTitle.textContent = 'Selected Works';
+                
+            } else if (page === 'portfolio') {
+                mainContent.classList.remove('hidden');
+                aboutPage.classList.add('hidden');
+                detailPage.classList.add('hidden');
+                
+                // Show all projects
+                extraProjects.forEach(el => el.classList.remove('hidden'));
+                if(viewAllBtn) viewAllBtn.classList.add('hidden');
+                if(projectsTitle) projectsTitle.textContent = 'All Projects';
+                
+                // Scroll to projects section
+                setTimeout(() => {
+                    const y = document.getElementById('projects').getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }, 50);
+
+            } else if (page === 'about') {
+                mainContent.classList.add('hidden');
+                aboutPage.classList.remove('hidden');
+                detailPage.classList.add('hidden');
+            }
+            
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+            document.getElementById('mobile-menu').classList.remove('flex');
+            
+            // Trigger animation observer on new elements
+            setTimeout(initScrollAnimations, 100);
+            
+            if(page !== 'portfolio') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        // Event Listeners for Nav Links
+        document.querySelectorAll('.nav-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+                const targetSection = this.getAttribute('data-section');
+
+                if (targetPage) {
+                    navigateTo(targetPage);
+                } else if (targetSection) {
+                    navigateTo('home'); // Ensure we are on home to see skills
+                    setTimeout(() => {
+                        const target = document.getElementById(targetSection);
+                        if (target) {
+                            const y = target.getBoundingClientRect().top + window.scrollY - 100;
+                            window.scrollTo({top: y, behavior: 'smooth'});
+                        }
+                    }, 100);
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            if(mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+                mobileBtn.innerHTML = '<i class="fa-solid fa-xmark text-xl"></i>';
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+                mobileBtn.innerHTML = '<i class="fa-solid fa-bars text-lg"></i>';
+            }
+        });
+
+        // Scroll Reveal Animation Observer (Awwwards Style)
+        function initScrollAnimations() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Optional: stop observing once revealed
+                        // observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-up').forEach((el) => {
+                observer.observe(el);
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initScrollAnimations();
+        });
+    </script>
+</body>
+</html>
